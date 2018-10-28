@@ -3,7 +3,7 @@
 
 #' Creates useful derived variables and returns dt
 #'
-#' \code{createDerivedFtF}:
+#' \code{ftfCreateDerived}:
 #'
 #'    sets proper dates and times for R;
 #'    guesses 'home' by looking at location from 01:00 - 04:00. A future version might try geocoding other
@@ -19,7 +19,7 @@
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk} (original)
 #' @export
 #'
-createDerivedFtF <- function(dt){
+ftfCreateDerived <- function(dt){
   # dates and times
   dt <- dt[, rDate := lubridate::dmy(`Date (GPS)`)] # fix date, some will be NA if no GPS signal
   dt <- dt[, rTime := hms::parse_hms(`Time (GPS)`)] # fix Time, some will be NA if no GPS signal
@@ -44,7 +44,7 @@ createDerivedFtF <- function(dt){
 
 #' Remove disclosive variables
 #'
-#' \code{createSafeFtF} creates a new uhnique EV ID byhashing the `Reg No` and then removes the following disclosive variables:
+#' \code{ftfCreateSafe} creates a new uhnique EV ID byhashing the `Reg No` and then removes the following disclosive variables:
 #'  `Reg No`
 #'  `Latitude`
 #'  `Longitude`
@@ -57,7 +57,7 @@ createDerivedFtF <- function(dt){
 #' @author Ben Anderson, \email{b.anderson@@soton.ac.uk} (original)
 #' @export
 #'
-createSafeFtF <- function(dt){
+ftfCreateSafe <- function(dt){
   dt <- dt[, evID := openssl::md5(`Reg No`)] # hash the reg number to get a unique anonymous id - see https://en.wikipedia.org/wiki/MD5 and ?openssl::md5
   safeDT <- dt[, c("Reg No", "Latitude", "Longitude", "Course (deg)") := NULL]
   return(safeDT)
