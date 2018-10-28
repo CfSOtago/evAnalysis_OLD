@@ -23,7 +23,7 @@ evAnalysis::setup() # creates evParams list
 
 dataLoc <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/flipTheFleet/")
 rmdFile <- paste0(evParams$repoLoc, "/ftf/dataProcessing/ftFBlackBoxTestDataCodebook.Rmd")
-outputLoc <- path.expand(paste0(evParams$repoLoc, "/dataProcessing/"))
+outputLoc <- path.expand(paste0(evParams$repoLoc, "ftf/dataProcessing/"))
 
 # --- Code ---
 
