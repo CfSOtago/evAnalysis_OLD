@@ -10,11 +10,10 @@ ftfCreateDerived(dt)
 \code{ftfCreateDerived}:
 }
 \details{
-sets proper dates and times for R;
-   guesses 'home' by looking at location from 01:00 - 04:00. A future version might try geocoding other
+- Sets proper dates and times for R based on GPS. Fails where no GPS (DM to fix)
+   - Guesses 'home' by looking at location from 01:00 - 04:00. A future version might try geocoding other
    locations (e.g public charging points) via lat/long look-up
-
-adds new derived variables to the passed data.table and returns it
+   - adds new derived variables to the passed data.table and returns it
 }
 \author{
 Ben Anderson, \email{b.anderson@soton.ac.uk} (original)
