@@ -24,11 +24,11 @@ ftfDT <- rbindlist(lapply(fListDT$fullPath,
                             ), fill = TRUE
                      )
 
-# create derived 
-ftfDT <- GREENGrid::createDerivedFtF(ftfDT) # any parsing failures are NA dates
+# create derived
+ftfDT <- evAnalysis::ftfCreateDerived(ftfDT) # any parsing failures are NA dates
 
 # make it safe
-ftfSafeDT <- GREENGrid::createSafeFtF(ftfDT)
+ftfSafeDT <- evAnalysis::ftfCreateSafe(ftfDT)
 
 # save safe data out  ----
 of <- path.expand(paste0(dataLoc, "safe/ftfSafeLatestAll.csv"))
