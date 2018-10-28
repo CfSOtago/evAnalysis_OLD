@@ -1,0 +1,319 @@
+---
+params:
+ dataLoc: '' # passed in
+ iFile: '' # passed in
+ fileName: '' # passed in
+ title: "FlipTheFleet Test Black Box Data: Codebook"
+title: '`r params$title`'
+subtitle: '`r params$file`'
+author: 'Ben Anderson (b.anderson@soton.ac.uk, `@dataknut`)'
+date: 'Last run at: `r Sys.time()`'
+output:
+  bookdown::html_document2:
+    toc: true
+    toc_float: TRUE
+    toc_depth: 2
+    self_contained: no
+  bookdown::pdf_document2:
+    toc: true
+    toc_depth: 2
+  bookdown::word_document2:
+    toc: true
+    toc_depth: 2
+bibliography: '`r path.expand("~/bibliography.bib")`'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE) # by default turn off code echo
+#options(knitr.table.format = 'markdown') # try to fix the tables issue (seems to be pushing html into latex)
+```
+
+```{r codeSetup, include=FALSE}
+#rm(list=ls(all=TRUE)) # remove all objects from workspace
+
+# Set start time ----
+startTime <- proc.time()
+
+# Packages needed in this .Rmd file ----
+rmdLibs <- c("data.table", # data munching
+             "dplyr", # data munching
+             "ggplot2", # for fancy graphs
+             "lubridate", # date & time processing
+             "readr", # writing to files
+             "Hmisc", # describe
+             "codebook", # codebook
+             "leaflet", #for maps
+             "skimr", # for skim
+             "GREENGrid", # ftf functions
+             "kableExtra" # for smart kable
+)
+# load them
+dkUtils::loadLibraries(rmdLibs)
+
+# run gg set up
+GREENGrid::setup() # sets a load of parameters which are then accessible via ggParams$xxx
+```
+
+\newpage
+
+# Citation
+
+If you wish to use any of the material from this report please cite as:
+
+ * Anderson, B. (`r 1900 + as.POSIXlt(Sys.Date())$year`) `r params$title`: `r params$subtitle` (File: `r params$fileName`), `r ggParams$pubLoc`.
+
+This work is (c) `r as.POSIXlt(Sys.time())$year + 1900` the University of Southampton.
+
+\newpage
+
+# About
+
+## Circulation
+
+```{r generic circulation, child=ggParams$circulationGenericRmd}
+```
+ 
+## Purpose
+
+This report is intended to: 
+
+ * load and test preliminary 'black box' EV monitoring data provided for assessment purposes by [FlipTheFleet](http://flipthefleet.org/).
+
+## Requirements
+
+ * test dataset: `r params$file`
+
+## History
+
+```{r child=ggParams$historyGenericRmd}
+```
+ 
+Specific history of this code:
+
+ * https://github.com/CfSOtago/GREENGrid/tree/master/dataProcessing/ftf/
+
+## Support
+
+```{r child=ggParams$supportGenericRmd}
+```
+ 
+
+# Load data files
+
+```{r get fileNames}
+
+```
+
+In this section we load, merge and describe `r params$iFile`.
+
+```{r load ftf data}
+# use read_csv inside as.data.table to make use of readr's smart parsing
+
+# for(f in fListDT$fullPath){
+#   dt <- data.table::as.data.table(readr::read_csv(f, col_types = NULL, progress = FALSE)
+#                                      )
+#   nVars <- ncol(dt)
+#   message(f, ": ", nVars, " variables")
+# }
+# ftfDT <- rbindlist(lapply(fListDT$fullPath,
+#                             function(f)
+#                               data.table::as.data.table(readr::read_csv(f,
+#                                                                         progress = FALSE)
+#                                                         )
+#                             ), fill = TRUE
+#                      )
+ftfDT <- data.table::as.data.table(readr::read_csv(params$iFile,
+                                                   col_types = NULL, 
+                                                   progress = FALSE)
+)
+```
+
+Original data:
+
+```{r checkData}
+skimr::skim(ftfDT)
+```
+
+# Location inference
+
+The raw data has latitude and longitude. This is very disclosive, although there are likely to be errors. For example 0 values in the table below (off the coast of West Africa) may indicate GPS signal issues.
+
+```{r getTestGeo}
+geoDT <- ftfDT[, .(Longitude, Latitude, Altitude, ambient_temp_1)]
+
+kableExtra::kable(summary(geoDT), caption = "Summary of test geo data") %>%
+  kable_styling()
+
+```
+
+
+```{r mapAllLocations, fig.cap="Map of sample of observations"}
+# draw map of random sample of EV locations
+
+points <- 50
+
+mapDT <- sample_n(geoDT[Latitude != 0 & Longitude != 0], 50)
+
+# https://rstudio.github.io/leaflet/markers.html
+
+leaflet::leaflet(data = mapDT[]) %>% addTiles() %>%
+  addMarkers(~Longitude, ~Latitude, popup = ~as.character(ambient_temp_1), label = ~as.character(ambient_temp_1))
+
+```
+
+Figure \@ref(fig:mapAllLocations) maps the location of a random sample of `r points` of the observations in the dataset. If we selected just one vehicle and zoomed our map to the location at 01:00 - 04:00 when speed is 0 then we would probably determine their home. We could also determine other places visited at other times... This indicates how [disclosive GPS Lat/Long can be](http://toddwschneider.com/posts/analyzing-1-1-billion-nyc-taxi-and-uber-trips-with-a-vengeance/) even if address data is not provided.
+
+# Derived variables
+
+Create some useful derived variables.
+
+```{r process ftf data, echo = TRUE}
+# create derived 
+ftfDT <- GREENGrid::createDerivedFtF(ftfDT)
+```
+
+If there is a 'failed to parse' message it suggests some dates and times could not be correctly parsed by ` GREENGrid::createDerivedFtF()`. We can check this using by comparing the original and parsed variables:
+
+```{r checkFails}
+message("Date (GPS)")
+summary(ftfDT$`Date (GPS)`)
+
+message("Time (GPS)")
+summary(ftfDT$`Time (GPS)`)
+
+message("rDateTime")
+summary(ftfDT$rDateTime)
+
+```
+
+It looks like the dates don't always parse. Check a few...
+
+```{r checkDates}
+dateFail <- ftfDT[is.na(rDateTime), .(`Date (GPS)`, rDateTime, `Time (GPS)`)]
+
+kableExtra::kable(head(dateFail), caption = "Example rows where date failed to parse") %>% 
+  kable_styling()
+```
+
+Doesn't look like we can do much about these...
+
+# Preventing geo-disclosure
+
+To avoid any risk of location disclosure we next infer a very coarse geo-location at each time point so that we can remove the potentially disclosive GPS data before moving on to the analysis. 
+
+Note that this does not necessarily render this dataset _completely safe_ ([anonymised](https://www.ukdataservice.ac.uk/manage-data/legal-ethical/anonymisation)) as there may well be other variables that provide sufficient information either on their own or together which would [enable identification](https://www.ukdataservice.ac.uk/manage-data/legal-ethical/anonymisation) of the car and it's owner.
+
+```{r inferLoc, fig.cap="Check inferred location", echo=TRUE}
+plotDT <- ftfDT[, .(nObs = .N), 
+                keyby = .(derivedLocation, obsHour = lubridate::hour(rDateTime), rDow = lubridate::wday(rDateTime))]
+
+ggplot(plotDT, aes(x = obsHour, y = nObs)) + 
+  geom_col() + 
+  facet_grid(rDow ~ derivedLocation)
+```
+
+Figure \@ref(fig:inferLoc) shows the results of this inference. Does it look like a reasonable guestimate of location?
+
+# Make safe version
+
+We now create a unique EV ID by hashing the `Reg No` and then removing the following variables before we do anything else as they are potentially disclosive:
+
+ * `Reg No`
+ * `Latitude`
+ * `Longitude` 
+ * `Course (deg)` 
+ 
+```{r makeSafe}
+# do analysis on safe version
+ftfSafeDT <- GREENGrid::createSafeFtF(ftfDT)
+```
+
+That gives us a data file with:
+
+ * `r dkUtils::tidyNum(nrow(ftfSafeDT))` rows of data
+ * `r ncol(ftfSafeDT)` columns (variables)
+ * `r uniqueN(ftfSafeDT$evID)` EVs
+
+# Codebook
+
+Describe data to create codebook:
+
+```{r hmiscCodebook, eval=TRUE}
+# fails to wrap properly even if we remove cols - how to force small font so it fits?
+# uses skim
+
+cb <- Hmisc::describe(ftfSafeDT)
+
+cb
+```
+
+
+```{r codebookCodebook, eval=FALSE}
+# fails to wrap properly even if we remove cols - how to force small font so it fits?
+# uses skim
+
+cb <- codebook::codebook_table(ftfSafeDT)
+cb <- dplyr::select(cb, -starts_with("p")) 
+cb <- dplyr::select(cb, -starts_with("comp")) 
+cb <- dplyr::select(cb, -starts_with("median")) 
+cb <- dplyr::select(cb, -starts_with("n_unique")) 
+cb <- dplyr::select(cb, -starts_with("empty"))
+cb <- dplyr::select(cb, -starts_with("units"))
+
+cb
+```
+
+```{r skimCodebook, eval=FALSE}
+# an alternative approach also fails to wrap properly - how to force small font so it fits?
+
+skimCB <- skim(ftfSafeDT)
+
+cb <- dplyr::filter(skimCB, stat != "p0" & stat != "p100")
+```
+
+# Save safe data out
+
+Save the safe data for future use and gzip it.
+
+```{r saveData}
+of <- path.expand(paste0(params$dataLoc, "safe/", params$fileName, "_safe.csv"))
+
+data.table::fwrite(ftfSafeDT, of)
+ofs <- file.size(of)
+dkUtils::gzipIt(of)
+gzofs <- file.size(paste0(of, ".gz"))
+```
+
+Gzipped the file to reduce it from `r round(ofs*1e-6,2)` MB to `r round(gzofs*1e-6,2)` MB.
+
+# Runtime
+
+
+```{r check runtime, include=FALSE}
+t <- proc.time() - startTime
+
+elapsed <- t[[3]]
+```
+
+Analysis completed in `r round(elapsed,2)` seconds ( `r round(elapsed/60,2)` minutes) using [knitr](https://cran.r-project.org/package=knitr) in [RStudio](http://www.rstudio.com) with `r R.version.string` running on `r R.version$platform`.
+
+# R environment
+
+R packages used:
+
+ * base R - for the basics [@baseR]
+ * data.table - for fast (big) data handling [@data.table]
+ * lubridate - date manipulation [@lubridate]
+ * ggplot2 - for slick graphics [@ggplot2]
+ * readr - for csv reading/writing [@readr]
+ * Hmisc - for describe [@Hmisc]
+ * knitr - to create this document & neat tables [@knitr]
+ * GREENGrid - for local NZ GREEN Grid project utilities
+
+Session info:
+
+```{r sessionInfo, echo=FALSE}
+sessionInfo()
+```
+
+# References

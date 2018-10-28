@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Ben Anderson (b.anderson@soton.ac.uk, @dataknut)" />
+
+
+<title>FlipTheFleet Black Box Data Tests</title>
+
+<script src="ftFBlackBoxTestDataChargeTime_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="ftFBlackBoxTestDataChargeTime_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="ftFBlackBoxTestDataChargeTime_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="ftFBlackBoxTestDataChargeTime_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="ftFBlackBoxTestDataChargeTime_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="ftFBlackBoxTestDataChargeTime_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="ftFBlackBoxTestDataChargeTime_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="ftFBlackBoxTestDataChargeTime_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="ftFBlackBoxTestDataChargeTime_files/navigation-1.1/tabsets.js"></script>
+<link href="ftFBlackBoxTestDataChargeTime_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="ftFBlackBoxTestDataChargeTime_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">FlipTheFleet Black Box Data Tests</h1>
+<h3 class="subtitle"><em>Testing Time of Charging</em></h3>
+<h4 class="author"><em>Ben Anderson (<a href="mailto:b.anderson@soton.ac.uk">b.anderson@soton.ac.uk</a>, <code>@dataknut</code>)</em></h4>
+<h4 class="date"><em>Last run at: 2018-10-26 16:03:51</em></h4>
+
+</div>
+
+
+
+<div id="citation" class="section level1">
+<h1><span class="header-section-number">1</span> Citation</h1>
+<p>If you wish to use any of the material from this report please cite as:</p>
+<ul>
+<li>Anderson, B. (2018) <em>FlipTheFleet Black Box Data Tests: Testing Time of Charging</em>, <a href="http://www.otago.ac.nz/centre-sustainability/">Centre for Sustainability</a>, University of Otago: Dunedin, New Zealand.</li>
+</ul>
+<p>This work is (c) 2018 the University of Southampton. Re-use is governed by <a href="https://github.com/CfSOtago/GREENGrid/blob/master/LICENSE">this license</a>.</p>
+
+</div>
+<div id="about" class="section level1">
+<h1><span class="header-section-number">2</span> About</h1>
+<div id="circulation" class="section level2">
+<h2><span class="header-section-number">2.1</span> Circulation</h2>
+<p>Report circulation:</p>
+<ul>
+<li>Restricted to: <a href="https://www.otago.ac.nz/centre-sustainability/research/energy/otago050285.html">NZ GREEN Grid</a> project partners and contractors.</li>
+</ul>
+</div>
+<div id="purpose" class="section level2">
+<h2><span class="header-section-number">2.2</span> Purpose</h2>
+<p>This report is intended to:</p>
+<ul>
+<li>load and test preliminary ‘<a href="https://flipthefleet.org/ev-black-box/">black box</a>’ (see Figure <a href="#fig:blackBox">2.1</a>) EV monitoring data provided for assessment purposes by <a href="http://flipthefleet.org/">FlipTheFleet</a></li>
+<li>preliminary analysis of time of charging to understand impact on ‘peak’ electricity demand</li>
+</ul>
+<div class="figure" style="text-align: right"><span id="fig:blackBox"></span>
+<img src="fig/bb.jpg" alt="The Black Box (Source: FlipTheFleet)" width="204" />
+<p class="caption">
+Figure 2.1: The Black Box (Source: FlipTheFleet)
+</p>
+</div>
+</div>
+<div id="requirements" class="section level2">
+<h2><span class="header-section-number">2.3</span> Requirements:</h2>
+<ul>
+<li>test FlipTheFleet black box dataset stored on the University of Otago’s High-Capacity Central File Storage <a href="https://www.otago.ac.nz/its/services/hosting/otago068353.html">HCS</a> at: /Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/flipTheFleet/safe/ftfSafeLatestAll.csv.gz</li>
+</ul>
+</div>
+<div id="code-and-report-history" class="section level2">
+<h2><span class="header-section-number">2.4</span> Code and report history</h2>
+<p>Generally tracked via our git.soton <a href="https://git.soton.ac.uk/ba1e12/nzGREENGrid">repo</a>:</p>
+<ul>
+<li><a href="https://git.soton.ac.uk/ba1e12/nzGREENGrid/commits/master">history</a></li>
+<li><a href="https://git.soton.ac.uk/ba1e12/nzGREENGrid/issues">issues</a></li>
+</ul>
+<p>Specific history of this code:</p>
+<ul>
+<li><a href="https://git.soton.ac.uk/ba1e12/nzGREENGrid/tree/master/analysis/ev" class="uri">https://git.soton.ac.uk/ba1e12/nzGREENGrid/tree/master/analysis/ev</a></li>
+</ul>
+</div>
+<div id="support" class="section level2">
+<h2><span class="header-section-number">2.5</span> Support</h2>
+<p>This work was supported by:</p>
+<ul>
+<li>The <a href="https://www.otago.ac.nz/">University of Otago</a>;</li>
+<li>The <a href="https://www.southampton.ac.uk/">University of Southampton</a>;</li>
+<li>The New Zealand <a href="http://www.mbie.govt.nz/">Ministry of Business, Innovation and Employment (MBIE)</a> through the <a href="https://www.otago.ac.nz/centre-sustainability/research/energy/otago050285.html">NZ GREEN Grid</a> project;</li>
+<li><a href="http://www.energy.soton.ac.uk/tag/spatialec/">SPATIALEC</a> - a <a href="http://ec.europa.eu/research/mariecurieactions/about-msca/actions/if/index_en.htm">Marie Skłodowska-Curie Global Fellowship</a> based at the University of Otago’s <a href="http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html">Centre for Sustainability</a> (2017-2019) &amp; the University of Southampton’s Sustainable Energy Research Group (2019-2020).</li>
+</ul>
+<p>We do not ‘support’ the code but if you notice a problem please check the <a href="https://github.com/CfSOtago/GREENGrid/issues">issues</a> on our <a href="https://github.com/CfSOtago/GREENGrid">repo</a> and if it doesn’t already exist, please open a new one.</p>
+</div>
+<div id="notes" class="section level2">
+<h2><span class="header-section-number">2.6</span> Notes</h2>
+<p>This document was created using <a href="https://cran.r-project.org/package=knitr">knitr</a> in <a href="http://www.rstudio.com">RStudio</a> with R version 3.5.1 (2018-07-02) running on x86_64-apple-darwin15.6.0. Some of the R code has been included where used for information and reference purposes. Full code is <a href="https://github.com/CfSOtago/GREENGrid/tree/master/analysis/ev">available</a> as noted above.</p>
+</div>
+</div>
+<div id="load-and-check-data" class="section level1">
+<h1><span class="header-section-number">3</span> Load and check data</h1>
+<div id="load-data" class="section level2">
+<h2><span class="header-section-number">3.1</span> Load data</h2>
+<p>In this section we load and describe the pre-processed safe data from /Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/flipTheFleet/safe/ftfSafeLatestAll.csv.gz. Note that this data does <em>not</em> contain Latitude/Longitude or the vehicle registration number. This has been replaced by a unique hash code (per vehicle).</p>
+<pre class="r"><code>ftfSafeDT &lt;- data.table::as.data.table(readr::read_csv(dFile))</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_integer(),
+##   `Date (GPS)` = col_character(),
+##   Altitude = col_double(),
+##   `Speed (GPS)` = col_double(),
+##   `Speed (Speedometer)` = col_double(),
+##   SOC = col_double(),
+##   AHr = col_double(),
+##   `Pack volts` = col_double(),
+##   `Pack amps` = col_double(),
+##   `Pack 1 temp (C)` = col_double(),
+##   `Pack 2 temp (C)` = col_double(),
+##   `Pack 3 temp (C)` = col_double(),
+##   `Pack 4 temp (C)` = col_double(),
+##   `12V battery (amps)` = col_double(),
+##   Hx = col_double(),
+##   VIN = col_character(),
+##   `12V battery (volts)` = col_double(),
+##   `ACC (V)` = col_double(),
+##   SOH = col_double(),
+##   `SOH (version 2)` = col_double(),
+##   `Charger (amps)` = col_double()
+##   # ... with 88 more columns
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<pre><code>## Warning in rbind(names(probs), probs_f): number of columns of result is not
+## a multiple of vector length (arg 1)</code></pre>
+<pre><code>## Warning: 11793 parsing failures.
+## row # A tibble: 5 x 5 col     row col      expected       actual    file                             expected   &lt;int&gt; &lt;chr&gt;    &lt;chr&gt;          &lt;chr&gt;     &lt;chr&gt;                            actual 1 12490 cabin_t… no trailing c… .6666666… &#39;/Volumes/hum-csafe/Research Pr… file 2 12494 cabin_t… no trailing c… .6666666… &#39;/Volumes/hum-csafe/Research Pr… row 3 12496 cabin_t… no trailing c… .6666666… &#39;/Volumes/hum-csafe/Research Pr… col 4 12499 cabin_t… no trailing c… .2222222… &#39;/Volumes/hum-csafe/Research Pr… expected 5 12501 cabin_t… no trailing c… .2222222… &#39;/Volumes/hum-csafe/Research Pr…
+## ... ................. ... .......................................................................... ........ .......................................................................... ...... .......................................................................... .... .......................................................................... ... .......................................................................... ... .......................................................................... ........ ..........................................................................
+## See problems(...) for more details.</code></pre>
+<pre class="r"><code># re-create rTime
+ftfSafeDT &lt;- ftfSafeDT[, rTime := hms::as.hms(rDateTime)]
+
+# re-create rDow to stop it acting like a factor with alphabetic ordering
+ftfSafeDT &lt;- ftfSafeDT[, rDow := lubridate::wday(rDateTime, lab = TRUE)]</code></pre>
+<p>That loaded 46,741 observations from 2 vehicles. Table <a href="#tab:evSummary">3.1</a> summarises the available data for each EV.</p>
+<table>
+<caption><span id="tab:evSummary">Table 3.1: </span>Start and end of observation period and number of obs by anonymised vehicle ID</caption>
+<thead>
+<tr class="header">
+<th align="left">evID</th>
+<th align="left">obsStart</th>
+<th align="left">obsEnd</th>
+<th align="right">nObservations</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">44e70b238906b67964c088be78366d2c</td>
+<td align="left">2018-07-12 11:02:49</td>
+<td align="left">2018-09-08 15:27:48</td>
+<td align="right">34254</td>
+</tr>
+<tr class="even">
+<td align="left">b4ed70fa9b8d2419411908df6d78ee2a</td>
+<td align="left">2018-05-01 12:42:27</td>
+<td align="left">2018-06-11 09:40:28</td>
+<td align="right">12487</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="check-data-quality" class="section level2">
+<h2><span class="header-section-number">3.2</span> Check data quality</h2>
+<p>Next we check for NA in dates and other key variables.</p>
+<table>
+<caption><span id="tab:checkVolts">Table 3.2: </span>Number of obs and mean pack volts where date cannot be set by original GPS Date and Time</caption>
+<thead>
+<tr class="header">
+<th align="left">Date (GPS)</th>
+<th align="right">Time (GPS)</th>
+<th align="right">nObs</th>
+<th align="right">meanPackVolts</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">NA</td>
+<td align="right">NA</td>
+<td align="right">17472</td>
+<td align="right">90.15239</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:checkAmps">Table 3.3: </span>Number of obs and mean pack amps where time cannot be set by original GPS Date and Time</caption>
+<thead>
+<tr class="header">
+<th align="left">Date (GPS)</th>
+<th align="right">Time (GPS)</th>
+<th align="right">nObs</th>
+<th align="right">meanPackAmps</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">NA</td>
+<td align="right">NA</td>
+<td align="right">17472</td>
+<td align="right">16.5822</td>
+</tr>
+</tbody>
+</table>
+<p>It looks like there are NAs in the GPS derived Date &amp; Time variables.</p>
+<p>Since we really need to know the date and time, we remove these NAs from the data although they comprise 17472 (37.38 %) observations.</p>
+<blockquote>
+<p><em>XX (should we remove them - what does GPS NA mean? no signal?) XX </em></p>
+</blockquote>
+</div>
+<div id="check-variables-of-interest-for-this-analysis" class="section level2">
+<h2><span class="header-section-number">3.3</span> Check variables of interest for this analysis</h2>
+<p>Check charger related variables. These are:</p>
+<ul>
+<li><code>Pack amps</code></li>
+<li><code>Pack volts</code></li>
+</ul>
+<blockquote>
+<p>DM: “To determine charger power the variables ‘Pack volts’ and ‘Pack amps’ give you everything you need (with some extra code to separate out regen, and it is also useful to do some deltas of voltage and SoC over time to deal with noise in the current sensors). Negative pack amps with speed also at zero is charging (speed greater than zero and negative pack amps is regen).”</p>
+</blockquote>
+<p>Multiplying these two will give power in W. Figures <a href="#fig:checkAmpDist">3.1</a> to <a href="#fig:checkPowerDist">3.3</a> examine the distribution of amps, volts and the derived W.</p>
+<p>Figure <a href="#fig:checkAmpDist">3.1</a> shows a density plot for pack amps by EV and by whether or not the amps are -ve, +ve or 0. As we can see, positive amps (providing power to the vehicle) has a cluster of readings close to 0 and then a long positive tail. Negative amps (re-charging the battery) appears to have two distinct clusters and a similarly long negative tail. Only one vehicle reports a large number of 0 Amp readings.</p>
+<table>
+<caption><span id="tab:checkAmpDist">Table 3.4: </span>Amps check</caption>
+<thead>
+<tr class="header">
+<th align="left">ampFlag</th>
+<th align="left">evID</th>
+<th align="right">nObs</th>
+<th align="right">max</th>
+<th align="right">mean</th>
+<th align="right">min</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Negative amps</td>
+<td align="left">44e70b238906b67964c088be78366d2c</td>
+<td align="right">14415</td>
+<td align="right">-0.001</td>
+<td align="right">-8.029587</td>
+<td align="right">-125.991</td>
+</tr>
+<tr class="even">
+<td align="left">Negative amps</td>
+<td align="left">b4ed70fa9b8d2419411908df6d78ee2a</td>
+<td align="right">9522</td>
+<td align="right">-0.001</td>
+<td align="right">-8.377448</td>
+<td align="right">-32.754</td>
+</tr>
+<tr class="odd">
+<td align="left">Positive amps</td>
+<td align="left">44e70b238906b67964c088be78366d2c</td>
+<td align="right">3524</td>
+<td align="right">214.546</td>
+<td align="right">30.152265</td>
+<td align="right">0.001</td>
+</tr>
+<tr class="even">
+<td align="left">Positive amps</td>
+<td align="left">b4ed70fa9b8d2419411908df6d78ee2a</td>
+<td align="right">1624</td>
+<td align="right">32.747</td>
+<td align="right">10.534372</td>
+<td align="right">0.002</td>
+</tr>
+<tr class="odd">
+<td align="left">Zero amps</td>
+<td align="left">44e70b238906b67964c088be78366d2c</td>
+<td align="right">3</td>
+<td align="right">0.000</td>
+<td align="right">0.000000</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">Zero amps</td>
+<td align="left">b4ed70fa9b8d2419411908df6d78ee2a</td>
+<td align="right">181</td>
+<td align="right">0.000</td>
+<td align="right">0.000000</td>
+<td align="right">0.000</td>
+</tr>
+</tbody>
+</table>
+<div class="figure"><span id="fig:checkAmpDist"></span>
+<img src="ftFBlackBoxTestDataChargeTime_files/figure-html/checkAmpDist-1.png" alt="Distribution of Pack amp readings by car" width="672" />
+<p class="caption">
+Figure 3.1: Distribution of Pack amp readings by car
+</p>
+</div>
+<p>Next we check volts. Again we seperate -ve and +ve values. In this case it appears that we should probably filter out:</p>
+<ul>
+<li>-ve volts</li>
+<li>volts &gt; 1000</li>
+</ul>
+<table>
+<caption><span id="tab:checkVoltsDist">Table 3.5: </span>Volts check</caption>
+<thead>
+<tr class="header">
+<th align="left">voltFlag</th>
+<th align="left">evID</th>
+<th align="right">nObs</th>
+<th align="right">max</th>
+<th align="right">mean</th>
+<th align="right">min</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Negative volts</td>
+<td align="left">44e70b238906b67964c088be78366d2c</td>
+<td align="right">8</td>
+<td align="right">0.000</td>
+<td align="right">0.0000</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">Negative volts</td>
+<td align="left">b4ed70fa9b8d2419411908df6d78ee2a</td>
+<td align="right">87</td>
+<td align="right">0.000</td>
+<td align="right">0.0000</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">Positive volts</td>
+<td align="left">44e70b238906b67964c088be78366d2c</td>
+<td align="right">17934</td>
+<td align="right">397.056</td>
+<td align="right">382.9832</td>
+<td align="right">340.320</td>
+</tr>
+<tr class="even">
+<td align="left">Positive volts</td>
+<td align="left">b4ed70fa9b8d2419411908df6d78ee2a</td>
+<td align="right">11240</td>
+<td align="right">5783.520</td>
+<td align="right">430.0139</td>
+<td align="right">269.856</td>
+</tr>
+</tbody>
+</table>
+<div class="figure"><span id="fig:checkVoltsDist"></span>
+<img src="ftFBlackBoxTestDataChargeTime_files/figure-html/checkVoltsDist-1.png" alt="Distribution of charger volt readings" width="672" />
+<p class="caption">
+Figure 3.2: Distribution of charger volt readings
+</p>
+</div>
+<p>Finally (Figure <a href="#fig:checkPowerDist">3.3</a>) shows the distirbution of the derived -ve, zero and +ve power values using the following filters:</p>
+<ul>
+<li>volts &lt; 0 and volts &gt; 1000 = “Volt error?”</li>
+</ul>
+<table>
+<caption><span id="tab:checkPowerDist">Table 3.6: </span>Power check</caption>
+<thead>
+<tr class="header">
+<th align="left">powerFlag</th>
+<th align="left">evID</th>
+<th align="right">nObs</th>
+<th align="right">max</th>
+<th align="right">mean</th>
+<th align="right">min</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Negative power</td>
+<td align="left">44e70b238906b67964c088be78366d2c</td>
+<td align="right">14411</td>
+<td align="right">-0.396384</td>
+<td align="right">-3077.387</td>
+<td align="right">-49196.687616</td>
+</tr>
+<tr class="even">
+<td align="left">Negative power</td>
+<td align="left">b4ed70fa9b8d2419411908df6d78ee2a</td>
+<td align="right">9318</td>
+<td align="right">-0.383712</td>
+<td align="right">-3197.947</td>
+<td align="right">-12530.626560</td>
+</tr>
+<tr class="odd">
+<td align="left">Positive power</td>
+<td align="left">44e70b238906b67964c088be78366d2c</td>
+<td align="right">3520</td>
+<td align="right">82266.190464</td>
+<td align="right">11284.541</td>
+<td align="right">0.396576</td>
+</tr>
+<tr class="even">
+<td align="left">Positive power</td>
+<td align="left">b4ed70fa9b8d2419411908df6d78ee2a</td>
+<td align="right">1611</td>
+<td align="right">12831.848640</td>
+<td align="right">3936.218</td>
+<td align="right">0.740352</td>
+</tr>
+<tr class="odd">
+<td align="left">Volt error?</td>
+<td align="left">44e70b238906b67964c088be78366d2c</td>
+<td align="right">8</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="left">Volt error?</td>
+<td align="left">b4ed70fa9b8d2419411908df6d78ee2a</td>
+<td align="right">280</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">Zero power</td>
+<td align="left">44e70b238906b67964c088be78366d2c</td>
+<td align="right">3</td>
+<td align="right">0.000000</td>
+<td align="right">0.000</td>
+<td align="right">0.000000</td>
+</tr>
+<tr class="even">
+<td align="left">Zero power</td>
+<td align="left">b4ed70fa9b8d2419411908df6d78ee2a</td>
+<td align="right">118</td>
+<td align="right">0.000000</td>
+<td align="right">0.000</td>
+<td align="right">0.000000</td>
+</tr>
+</tbody>
+</table>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<pre><code>## Warning: Removed 288 rows containing non-finite values (stat_bin).</code></pre>
+<div class="figure"><span id="fig:checkPowerDist"></span>
+<img src="ftFBlackBoxTestDataChargeTime_files/figure-html/checkPowerDist-1.png" alt="Distribution of derived power demand using these filters" width="672" />
+<p class="caption">
+Figure 3.3: Distribution of derived power demand using these filters
+</p>
+</div>
+<p>As noted above, battery charging will be occuring when power is negative. This will be from the grid when speed is zero.</p>
+</div>
+</div>
+<div id="analysis-number-of-observations-over-time" class="section level1">
+<h1><span class="header-section-number">4</span> Analysis: Number of observations over time</h1>
+<p>Just a simple trend line for each vehicle… Note that the <code>Reg No</code> has been replaced with a unique hash ID.</p>
+<p><img src="ftFBlackBoxTestDataChargeTime_files/figure-html/carTrends-1.png" width="672" /></p>
+</div>
+<div id="analysis-power-flows-tofrom-batteries" class="section level1">
+<h1><span class="header-section-number">5</span> Analysis: Power flows to/from batteries</h1>
+<p>We use <code>Speed (Speedometer)</code> as this has no missing values (unlike <code>Speed (GPS)</code>) to flag observations which should be electricity grid based as opposed to regenerative charging.</p>
+<table>
+<caption><span id="tab:powerTable">Table 5.1: </span>Check coding</caption>
+<thead>
+<tr class="header">
+<th align="left">chargingFlag</th>
+<th align="right">minSpeed</th>
+<th align="right">meanSpeed</th>
+<th align="right">maxSpeed</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Vehicle in use (no charging)?</td>
+<td align="right">0.00</td>
+<td align="right">41.60903</td>
+<td align="right">111.82</td>
+</tr>
+<tr class="even">
+<td align="left">Regenerative?</td>
+<td align="right">2.87</td>
+<td align="right">51.16671</td>
+<td align="right">101.97</td>
+</tr>
+<tr class="odd">
+<td align="left">Grid?</td>
+<td align="right">0.00</td>
+<td align="right">0.00000</td>
+<td align="right">0.00</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption><span id="tab:powerTable">Table 5.1: </span>Summary of derived chargeingPowerW per car</caption>
+<thead>
+<tr class="header">
+<th align="left">evID</th>
+<th align="left">chargingFlag</th>
+<th align="right">meankW</th>
+<th align="right">sdkW</th>
+<th align="right">mediankW</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">44e70b238906b67964c088be78366d2c</td>
+<td align="left">Grid?</td>
+<td align="right">-2.786912</td>
+<td align="right">3.229894</td>
+<td align="right">-2.816239</td>
+</tr>
+<tr class="even">
+<td align="left">44e70b238906b67964c088be78366d2c</td>
+<td align="left">Regenerative?</td>
+<td align="right">-9.053428</td>
+<td align="right">8.645677</td>
+<td align="right">-6.050238</td>
+</tr>
+<tr class="odd">
+<td align="left">44e70b238906b67964c088be78366d2c</td>
+<td align="left">Vehicle in use (no charging)?</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="left">b4ed70fa9b8d2419411908df6d78ee2a</td>
+<td align="left">Grid?</td>
+<td align="right">-2.833136</td>
+<td align="right">1.224567</td>
+<td align="right">-3.179782</td>
+</tr>
+<tr class="odd">
+<td align="left">b4ed70fa9b8d2419411908df6d78ee2a</td>
+<td align="left">Regenerative?</td>
+<td align="right">-5.895578</td>
+<td align="right">3.447599</td>
+<td align="right">-5.543476</td>
+</tr>
+<tr class="even">
+<td align="left">b4ed70fa9b8d2419411908df6d78ee2a</td>
+<td align="left">Vehicle in use (no charging)?</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+</tbody>
+</table>
+<p>Figure <a href="#fig:chargingHisto"><strong>??</strong></a> shows the expected clustering of grid-based charging in the &lt; 5 kW region.</p>
+<pre><code>## Warning: Removed 288 rows containing non-finite values (stat_density).</code></pre>
+<p><img src="ftFBlackBoxTestDataChargeTime_files/figure-html/chargingHisto-1.png" width="672" /></p>
+</div>
+<div id="analysis-timing-of-charging" class="section level1">
+<h1><span class="header-section-number">6</span> Analysis: Timing of charging</h1>
+<p>Figure <a href="#fig:plotChargingTime">6.1</a> shows mean kW for inferred grid-based charging by time of day over the entire test datset of 97 days from 2018-05-01 to 2018-09-08.</p>
+<blockquote>
+<p>Does this look like what we expect?</p>
+</blockquote>
+<pre><code>## Warning: Removed 268 rows containing missing values (geom_point).</code></pre>
+<div class="figure"><span id="fig:plotChargingTime"></span>
+<img src="ftFBlackBoxTestDataChargeTime_files/figure-html/plotChargingTime-1.png" alt="Inferred charging times and power draw (all data)" width="672" />
+<p class="caption">
+Figure 6.1: Inferred charging times and power draw (all data)
+</p>
+</div>
+<p>Figure <a href="#fig:gridChargingTimingLine">6.2</a> reproduces the previous plot but only shows the mean power flow for observations which we think are <code>Grid?</code> charging and plots them by derived location. This highlights a few observations with apparently large power flows - is this fast charging or instrument error?</p>
+<div class="figure"><span id="fig:gridChargingTimingLine"></span>
+<img src="ftFBlackBoxTestDataChargeTime_files/figure-html/gridChargingTimingLine-1.png" alt="Timing of power flow (all)" width="672" />
+<p class="caption">
+Figure 6.2: Timing of power flow (all)
+</p>
+</div>
+<p>Finally, <a href="#fig:gridChargingTimingTile">6.3</a> shows the mean power flow by time of day and derived location using a tile plot with notional peak electricity demand periods marked. This visually masks rare events such as the large power flows and suggests charging timing patterns that make sense?</p>
+<div class="figure"><span id="fig:gridChargingTimingTile"></span>
+<img src="ftFBlackBoxTestDataChargeTime_files/figure-html/gridChargingTimingTile-1.png" alt="Timing of charging from the grid" width="672" />
+<p class="caption">
+Figure 6.3: Timing of charging from the grid
+</p>
+</div>
+</div>
+<div id="conclusions" class="section level1">
+<h1><span class="header-section-number">7</span> Conclusions</h1>
+<p>Questions to be asked</p>
+<ul>
+<li>Data:
+<ul>
+<li>Do the Amp &amp; Volt distributions look right?</li>
+<li>Cause of Pack amp &amp; Pack volt outliers?</li>
+<li>Date/Time NA (37.38 % of observations) are due to a lack of GPS date/time (and lat/long). Does this mean that there is no date/time in the data when GPS has no signal? Our tests suggest that other data (e.g. power etc) is logged even though there is no date/time. Do we need another source of date/time? Could we infer time from seconds since powered on (assumes GPS OK at start-up?)?</li>
+</ul></li>
+<li>Research:
+<ul>
+<li>Do all FlipTheFleet EV owners charge like this?</li>
+<li>Where are the EVs being charged when not at home and how can we tell?</li>
+<li>Does it vary by car/tariff/commute pattern/main use?</li>
+<li>What other patterns exist and how much within-vehicle and between-vehicle variation is there?</li>
+</ul></li>
+</ul>
+</div>
+<div id="runtime" class="section level1">
+<h1><span class="header-section-number">8</span> Runtime</h1>
+<p>Analysis completed in 15.67 seconds ( 0.26 minutes) using <a href="https://cran.r-project.org/package=knitr">knitr</a> in <a href="http://www.rstudio.com">RStudio</a> with R version 3.5.1 (2018-07-02) running on x86_64-apple-darwin15.6.0.</p>
+</div>
+<div id="r-environment" class="section level1">
+<h1><span class="header-section-number">9</span> R environment</h1>
+<p>R packages used:</p>
+<ul>
+<li>base R - for the basics <span class="citation">(R Core Team 2016)</span></li>
+<li>data.table - for fast (big) data handling <span class="citation">(Dowle et al. 2015)</span></li>
+<li>lubridate - date manipulation <span class="citation">(Grolemund and Wickham 2011)</span></li>
+<li>ggplot2 - for slick graphics <span class="citation">(Wickham 2009)</span></li>
+<li>readr - for csv reading/writing <span class="citation">(Wickham, Hester, and Francois 2016)</span></li>
+<li>openssl - for hashing <code>Reg No</code> <span class="citation">(Ooms 2018)</span></li>
+<li>knitr - to create this document &amp; neat tables <span class="citation">(Xie 2016)</span></li>
+<li>GREENGrid - for local NZ GREEN Grid project utilities</li>
+</ul>
+<p>Session info:</p>
+<pre><code>## R version 3.5.1 (2018-07-02)
+## Platform: x86_64-apple-darwin15.6.0 (64-bit)
+## Running under: macOS High Sierra 10.13.6
+## 
+## Matrix products: default
+## BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
+## LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
+## 
+## locale:
+## [1] en_NZ.UTF-8/en_NZ.UTF-8/en_NZ.UTF-8/C/en_NZ.UTF-8/en_NZ.UTF-8
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] knitr_1.20         GREENGrid_0.1.0    skimr_1.0.3       
+##  [4] codebook_0.6.3     Hmisc_4.1-1        Formula_1.2-3     
+##  [7] survival_2.42-6    lattice_0.20-35    readr_1.1.1       
+## [10] lubridate_1.7.4    ggplot2_3.1.0      dplyr_0.7.7       
+## [13] data.table_1.11.8  dkUtils_0.0.0.9000
+## 
+## loaded via a namespace (and not attached):
+##  [1] splines_3.5.1       shiny_1.1.0         assertthat_0.2.0   
+##  [4] highr_0.7           latticeExtra_0.6-28 yaml_2.2.0         
+##  [7] pillar_1.3.0        backports_1.1.2     glue_1.3.0         
+## [10] digest_0.6.18       RColorBrewer_1.1-2  promises_1.0.1     
+## [13] checkmate_1.8.5     colorspace_1.3-2    htmltools_0.3.6    
+## [16] httpuv_1.4.5        Matrix_1.2-14       plyr_1.8.4         
+## [19] pkgconfig_2.0.2     labelled_1.1.0      haven_1.1.2        
+## [22] bookdown_0.7        purrr_0.2.5         xtable_1.8-3       
+## [25] scales_1.0.0        jpeg_0.1-8          later_0.7.5        
+## [28] htmlTable_1.12      tibble_1.4.2        openssl_1.0.2      
+## [31] withr_2.1.2         nnet_7.3-12         lazyeval_0.2.1     
+## [34] cli_1.0.1           magrittr_1.5        crayon_1.3.4       
+## [37] mime_0.6            evaluate_0.12       fansi_0.4.0        
+## [40] forcats_0.3.0       foreign_0.8-71      tools_3.5.1        
+## [43] hms_0.4.2           stringr_1.3.1       munsell_0.5.0      
+## [46] cluster_2.0.7-1     bindrcpp_0.2.2      compiler_3.5.1     
+## [49] rlang_0.3.0.1       grid_3.5.1          rstudioapi_0.8     
+## [52] htmlwidgets_1.3     miniUI_0.1.1.1      base64enc_0.1-3    
+## [55] labeling_0.3        rmarkdown_1.10      gtable_0.2.0       
+## [58] reshape2_1.4.3      R6_2.3.0            gridExtra_2.3      
+## [61] utf8_1.1.4          bindr_0.1.1         rprojroot_1.3-2    
+## [64] stringi_1.2.4       Rcpp_0.12.19        rpart_4.1-13       
+## [67] acepack_1.4.1       tidyselect_0.2.5    xfun_0.4</code></pre>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<div id="refs" class="references">
+<div id="ref-data.table">
+<p>Dowle, M, A Srinivasan, T Short, S Lianoglou with contributions from R Saporta, and E Antonyan. 2015. <em>Data.table: Extension of Data.frame</em>. <a href="https://CRAN.R-project.org/package=data.table" class="uri">https://CRAN.R-project.org/package=data.table</a>.</p>
+</div>
+<div id="ref-lubridate">
+<p>Grolemund, Garrett, and Hadley Wickham. 2011. “Dates and Times Made Easy with lubridate.” <em>Journal of Statistical Software</em> 40 (3): 1–25. <a href="http://www.jstatsoft.org/v40/i03/" class="uri">http://www.jstatsoft.org/v40/i03/</a>.</p>
+</div>
+<div id="ref-openssl">
+<p>Ooms, Jeroen. 2018. <em>Openssl: Toolkit for Encryption, Signatures and Certificates Based on Openssl</em>. <a href="https://CRAN.R-project.org/package=openssl" class="uri">https://CRAN.R-project.org/package=openssl</a>.</p>
+</div>
+<div id="ref-baseR">
+<p>R Core Team. 2016. <em>R: A Language and Environment for Statistical Computing</em>. Vienna, Austria: R Foundation for Statistical Computing. <a href="https://www.R-project.org/" class="uri">https://www.R-project.org/</a>.</p>
+</div>
+<div id="ref-ggplot2">
+<p>Wickham, Hadley. 2009. <em>Ggplot2: Elegant Graphics for Data Analysis</em>. Springer-Verlag New York. <a href="http://ggplot2.org" class="uri">http://ggplot2.org</a>.</p>
+</div>
+<div id="ref-readr">
+<p>Wickham, Hadley, Jim Hester, and Romain Francois. 2016. <em>Readr: Read Tabular Data</em>. <a href="https://CRAN.R-project.org/package=readr" class="uri">https://CRAN.R-project.org/package=readr</a>.</p>
+</div>
+<div id="ref-knitr">
+<p>Xie, Yihui. 2016. <em>Knitr: A General-Purpose Package for Dynamic Report Generation in R</em>. <a href="https://CRAN.R-project.org/package=knitr" class="uri">https://CRAN.R-project.org/package=knitr</a>.</p>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
