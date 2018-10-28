@@ -5,7 +5,7 @@ params:
  fileName: '' # passed in
  title: "FlipTheFleet Test Black Box Data: Codebook"
 title: '`r params$title`'
-subtitle: '`r params$file`'
+subtitle: '`r params$fileName`'
 author: 'Ben Anderson (b.anderson@soton.ac.uk, `@dataknut`)'
 date: 'Last run at: `r Sys.time()`'
 output:
@@ -20,7 +20,7 @@ output:
   bookdown::word_document2:
     toc: true
     toc_depth: 2
-bibliography: '`r path.expand("~/bibliography.bib")`'
+bibliography: '`r path.expand("~/bibliography.bib")`' # may break if this is missing
 ---
 
 ```{r setup, include=FALSE}
@@ -44,14 +44,11 @@ rmdLibs <- c("data.table", # data munching
              "codebook", # codebook
              "leaflet", #for maps
              "skimr", # for skim
-             "GREENGrid", # ftf functions
-             "kableExtra" # for smart kable
+             "knitr" # for kable
 )
 # load them
 dkUtils::loadLibraries(rmdLibs)
 
-# run gg set up
-GREENGrid::setup() # sets a load of parameters which are then accessible via ggParams$xxx
 ```
 
 \newpage
@@ -60,18 +57,13 @@ GREENGrid::setup() # sets a load of parameters which are then accessible via ggP
 
 If you wish to use any of the material from this report please cite as:
 
- * Anderson, B. (`r 1900 + as.POSIXlt(Sys.Date())$year`) `r params$title`: `r params$subtitle` (File: `r params$fileName`), `r ggParams$pubLoc`.
+ * Anderson, B. (`r 1900 + as.POSIXlt(Sys.Date())$year`) `r params$title`: `r params$subtitle` (File: `r params$fileName`), `r evParams$pubLoc`.
 
 This work is (c) `r as.POSIXlt(Sys.time())$year + 1900` the University of Southampton.
 
 \newpage
 
 # About
-
-## Circulation
-
-```{r generic circulation, child=ggParams$circulationGenericRmd}
-```
  
 ## Purpose
 
@@ -81,22 +73,22 @@ This report is intended to:
 
 ## Requirements
 
- * test dataset: `r params$file`
+ * test dataset: `r params$fileName`
 
 ## History
 
-```{r child=ggParams$historyGenericRmd}
-```
- 
-Specific history of this code:
+Specific history of this report:
 
- * https://github.com/CfSOtago/GREENGrid/tree/master/dataProcessing/ftf/
+ * https://github.com/CfSOtago/evAnalysis/tree/master/ftf/dataProcessing/ftFBlackBoxTestDataCodebook.Rmd
 
-## Support
+## Acknowledgements
 
-```{r child=ggParams$supportGenericRmd}
-```
- 
+Data provided by FlipTheFleet
+
+Analysis supported by:
+
+ * The New Zealand [Ministry of Business, Innovation and Employment (MBIE)](http://www.mbie.govt.nz/) through the [Renewable Energy and the Smart Grid (GREEN Grid)](https://www.otago.ac.nz/centre-sustainability/research/energy/otago050285.html) project;
+ * [SPATIALEC](http://www.energy.soton.ac.uk/tag/spatialec/) - a [Marie Skłodowska-Curie Global Fellowship](http://ec.europa.eu/research/mariecurieactions/about-msca/actions/if/index_en.htm) based at the University of Otago’s [Centre for Sustainability](http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html) (2017-2019) & the University of Southampton's Sustainable Energy Research Group (2019-2020).
 
 # Load data files
 
@@ -141,8 +133,7 @@ The raw data has latitude and longitude. This is very disclosive, although there
 ```{r getTestGeo}
 geoDT <- ftfDT[, .(Longitude, Latitude, Altitude, ambient_temp_1)]
 
-kableExtra::kable(summary(geoDT), caption = "Summary of test geo data") %>%
-  kable_styling()
+knitr::kable(summary(geoDT), caption = "Summary of test geo data")
 
 ```
 
@@ -169,10 +160,10 @@ Create some useful derived variables.
 
 ```{r process ftf data, echo = TRUE}
 # create derived 
-ftfDT <- GREENGrid::createDerivedFtF(ftfDT)
+ftfDT <- evAnalysis::ftfCreateDerived(ftfDT)
 ```
 
-If there is a 'failed to parse' message it suggests some dates and times could not be correctly parsed by ` GREENGrid::createDerivedFtF()`. We can check this using by comparing the original and parsed variables:
+If there is a 'failed to parse' message it suggests some dates and times could not be correctly parsed by ` evAnalysis::ftfCreateDerived()`. We can check this using by comparing the original and parsed variables:
 
 ```{r checkFails}
 message("Date (GPS)")
@@ -191,8 +182,7 @@ It looks like the dates don't always parse. Check a few...
 ```{r checkDates}
 dateFail <- ftfDT[is.na(rDateTime), .(`Date (GPS)`, rDateTime, `Time (GPS)`)]
 
-kableExtra::kable(head(dateFail), caption = "Example rows where date failed to parse") %>% 
-  kable_styling()
+knitr::kable(head(dateFail), caption = "Example rows where date failed to parse")
 ```
 
 Doesn't look like we can do much about these...
@@ -225,7 +215,7 @@ We now create a unique EV ID by hashing the `Reg No` and then removing the follo
  
 ```{r makeSafe}
 # do analysis on safe version
-ftfSafeDT <- GREENGrid::createSafeFtF(ftfDT)
+ftfSafeDT <- evAnalysis::ftfCreateSafe(ftfDT)
 ```
 
 That gives us a data file with:
@@ -308,7 +298,7 @@ R packages used:
  * readr - for csv reading/writing [@readr]
  * Hmisc - for describe [@Hmisc]
  * knitr - to create this document & neat tables [@knitr]
- * GREENGrid - for local NZ GREEN Grid project utilities
+ * evAnalysis - for local EV data utilities
 
 Session info:
 

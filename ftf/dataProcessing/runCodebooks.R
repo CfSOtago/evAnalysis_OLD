@@ -9,19 +9,21 @@ print(paste0("#-> Done "))
 # Load libraries needed in this script ----
 localLibs <- c("data.table",
                "rmarkdown",
-               "bookdown"
+               "bookdown",
+               "evAnalysis"
                )
 dkUtils::loadLibraries(localLibs)
 
+# Se global parameters for the package
+evAnalysis::setup() # creates evParams list
+
 # Local functions ----
 
-# Local parameters ----
-
-GREENGrid::setup()
+# Set local parameters ----
 
 dataLoc <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/flipTheFleet/")
-rmdFile <- paste0(ggParams$repoLoc, "/dataProcessing/ftf/ftFBlackBoxTestDataCodebook.Rmd")
-outputLoc <- path.expand(paste0(ggParams$repoLoc, "/dataProcessing/"))
+rmdFile <- paste0(evParams$repoLoc, "/ftf/dataProcessing/ftFBlackBoxTestDataCodebook.Rmd")
+outputLoc <- path.expand(paste0(evParams$repoLoc, "/dataProcessing/"))
 
 # --- Code ---
 
