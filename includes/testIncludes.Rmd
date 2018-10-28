@@ -1,0 +1,49 @@
+---
+title: "Testing includes"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE) # by default turn off code echo
+
+```
+
+```{r codeSetup, include=FALSE}
+#rm(list=ls(all=TRUE)) # remove all objects from workspace # <- don't do this - rmeoves params set in yaml!
+
+# Set start time ----
+startTime <- proc.time()
+
+library(dkUtils) # my utils :-) get this via devtools::install_github("dataknut/dkUtils")
+
+# Packages needed in this .Rmd file ----
+rmdLibs <- c("data.table", # data munching
+             "dplyr", # data munching
+             "ggplot2", # for fancy graphs
+             "lubridate", # date & time processing
+             "readr", # writing to files
+             "Hmisc", # describe
+             "codebook", # codebook
+             "skimr", # for skim
+             "evAnalysis", # ftf functions
+             "knitr" # for kable
+)
+# load them
+dkUtils::loadLibraries(rmdLibs)
+
+# run set up
+evAnalysis::setup() # sets a load of parameters which are then accessible via ggParams$xxx
+```
+
+\newpage
+
+# License
+
+```{r generic license, child=evParams$licenseCCBY}
+```
+
+# Support
+
+```{r generic support, child=evParams$support}
+```
+
