@@ -42,38 +42,36 @@ rmdLibs <- c("data.table", # data munching
              "Hmisc", # describe
              "codebook", # codebook
              "skimr", # for skim
-             "GREENGrid", # ftf functions
+             "evAnalysis", # ftf functions
              "knitr" # for kable
 )
 # load them
 dkUtils::loadLibraries(rmdLibs)
 
-# run gg set up
-GREENGrid::setup() # sets a load of parameters which are then accessible via ggParams$xxx
+# run set up
+evAnalysis::setup() # sets a load of parameters which are then accessible via evParams$xxx
 
 # Local paramaters ----
-ggParams$dataLoc <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/flipTheFleet/")
-dFile <- paste0(ggParams$dataLoc, "safe/ftfSafeLatestAll.csv.gz") # safe data file 
+evParams$dataLoc <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/flipTheFleet/")
+dFile <- paste0(evParams$dataLoc, "safe/ftfSafeLatestAll.csv.gz") # safe data file 
 ```
 
 \newpage
 
+# License
+
+```{r generic license, child=evParams$licenseCCBY}
+```
+ 
 # Citation
 
 If you wish to use any of the material from this report please cite as:
 
- * Anderson, B. (`r 1900 + as.POSIXlt(Sys.Date())$year`) _`r params$title`: `r params$subtitle`_, `r ggParams$pubLoc`.
-
-This work is (c) `r as.POSIXlt(Sys.time())$year + 1900` the University of Southampton. Re-use is governed by [this license](https://github.com/CfSOtago/GREENGrid/blob/master/LICENSE).
+ * Anderson, B. (`r 1900 + as.POSIXlt(Sys.Date())$year`) _`r params$title`: `r params$subtitle`_, `r evParams$pubLoc`.
 
 \newpage
 
 # About
-
-## Circulation
-
-```{r generic circulation, child=ggParams$circulationGenericRmd}
-```
  
 ## Purpose
 
@@ -88,20 +86,18 @@ knitr::include_graphics("fig/bb.jpg")
 
 ## Requirements:
 
- * test FlipTheFleet black box dataset stored on `r ggParams$otagoHCS` at: `r dFile`
+ * a safe version of the test FlipTheFleet black box dataset stored on `r evParams$otagoHCS` at: `r dFile`
+ * original data made safe using [ftf/dataProcessing/makeSafe.R](https://github.com/CfSOtago/evAnalysis/blob/master/ftf/dataProcessing/makeSafe.R)
 
 ## Code and report history
 
-```{r includeHistory, child=ggParams$historyGenericRmd}
-```
- 
-Specific history of this code:
+See:
 
- * https://git.soton.ac.uk/ba1e12/nzGREENGrid/tree/master/analysis/ev
+ * https://github.com/CfSOtago/evAnalysis/commits/master/ftf/analysis/ftFBlackBoxTestDataChargeTime.Rmd
 
 ## Support
 
-```{r includeSupport, child=ggParams$supportGenericRmd}
+```{r includeSupport, child=evParams$support}
 ```
  
 ## Notes
@@ -117,8 +113,9 @@ In this section we load and describe the pre-processed safe data from `r dFile`.
 ```{r load and fix ftf data, echo=TRUE}
 ftfSafeDT <- data.table::as.data.table(readr::read_csv(dFile))
 
-# re-create rTime
+# re-create rDate & rTime
 ftfSafeDT <- ftfSafeDT[, rTime := hms::as.hms(rDateTime)]
+ftfSafeDT <- ftfSafeDT[, rDate := lubridate::date(rDateTime)]
 
 # re-create rDow to stop it acting like a factor with alphabetic ordering
 ftfSafeDT <- ftfSafeDT[, rDow := lubridate::wday(rDateTime, lab = TRUE)]
@@ -170,7 +167,7 @@ pcGPSNA <- round((before - after)/before*100, 2)
 
 Since we really need to know the date and time, we remove these NAs from the data although they comprise `r before - after` (`r pcGPSNA` %) observations.
 
-> _XX (should we remove them - what does GPS NA mean? no signal?) XX _
+> GPS NA means no GPS signal. This could be when the vehicle is charging inside a garage or passes through a tunnel. As we need to know the date & time of charging for all observations, this will need to be fixed.
 
 ## Check variables of interest for this analysis
 
@@ -434,7 +431,8 @@ R packages used:
  * readr - for csv reading/writing [@readr]
  * openssl - for hashing `Reg No` [@openssl]
  * knitr - to create this document & neat tables [@knitr]
- * GREENGrid - for local NZ GREEN Grid project utilities
+ * [dkUtils](https://github.com/dataknut/dkUtils) - various utilities
+ * [evAnalysis](https://github.com/CfSOtago/evAnalysis) - for EV data functions
 
 Session info:
 
