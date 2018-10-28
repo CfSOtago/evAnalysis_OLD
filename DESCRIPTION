@@ -1,13 +1,13 @@
 Package: evAnalysis
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Supports the analysis of various electric vehicle perfomance datasets
+Version: 0.1
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Ben",
+           family = "Anderson",
            role = c("aut", "cre"),
-           email = "first.last@example.com")
-Description: What the package does (one paragraph).
-License: What license it uses
+           email = "ben.anderson@otago.ac.nz")
+Description: Cod eto clean, process and analyse performance and power-flow data from various electrich vehicle datasets.
+License: Apache License, Version 2.0, January 2004
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.0
