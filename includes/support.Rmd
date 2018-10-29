@@ -1,1 +1,4 @@
-This work is licensed under a <a rel="license" href="">[Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/) unless otherwise marked. ![License](https://i.creativecommons.org/l/by/4.0/88x31.png "License")
+This work was supported by:
+
+ * The New Zealand [Ministry of Business, Innovation and Employment (MBIE)](http://www.mbie.govt.nz/) through the [Renewable Energy and the Smart Grid (GREEN Grid)](https://www.otago.ac.nz/centre-sustainability/research/energy/otago050285.html) project;
+ * [SPATIALEC](http://www.energy.soton.ac.uk/tag/spatialec/) - a [Marie Skłodowska-Curie Global Fellowship](http://ec.europa.eu/research/mariecurieactions/about-msca/actions/if/index_en.htm) based at the University of Otago’s [Centre for Sustainability](http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html) (2017-2019) & the University of Southampton's Sustainable Energy Research Group (2019-2020).
