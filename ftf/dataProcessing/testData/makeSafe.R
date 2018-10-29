@@ -7,8 +7,8 @@ library(readr)
 library(data.table)
 
 dataLoc <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/flipTheFleet/")
-iPath <- paste0(dataLoc, "raw/")
-oPath <- paste0(dataLoc, "safe/")
+iPath <- paste0(dataLoc, "raw/testData/")
+oPath <- paste0(dataLoc, "safe/testData/")
 
 # get file list ----
 fileNames <- list.files(path = iPath , pattern = "EVBlackBox*")

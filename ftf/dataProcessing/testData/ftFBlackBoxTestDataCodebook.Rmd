@@ -49,11 +49,20 @@ rmdLibs <- c("data.table", # data munching
 # load them
 dkUtils::loadLibraries(rmdLibs)
 
+evAnalysis::setup() # set params etc
+
 ```
 
 \newpage
 
-# Citation
+# About
+
+## License
+
+```{r generic license, child=evParams$licenseCCBY}
+```
+
+## Citation
 
 If you wish to use any of the material from this report please cite as:
 
@@ -62,8 +71,6 @@ If you wish to use any of the material from this report please cite as:
 This work is (c) `r as.POSIXlt(Sys.time())$year + 1900` the University of Southampton.
 
 \newpage
-
-# About
  
 ## Purpose
 
@@ -79,16 +86,15 @@ This report is intended to:
 
 Specific history of this report:
 
- * https://github.com/CfSOtago/evAnalysis/tree/master/ftf/dataProcessing/ftFBlackBoxTestDataCodebook.Rmd
+ * https://github.com/CfSOtago/evAnalysis/commits/master/ftf/dataProcessing/ftFBlackBoxTestDataCodebook.Rmd
 
 ## Acknowledgements
 
-Data provided by FlipTheFleet
+Data provided by [FlipTheFleet](https://flipthefleet.org/ev-black-box/).
 
-Analysis supported by:
+```{r generic license, child=evParams$support}
+```
 
- * The New Zealand [Ministry of Business, Innovation and Employment (MBIE)](http://www.mbie.govt.nz/) through the [Renewable Energy and the Smart Grid (GREEN Grid)](https://www.otago.ac.nz/centre-sustainability/research/energy/otago050285.html) project;
- * [SPATIALEC](http://www.energy.soton.ac.uk/tag/spatialec/) - a [Marie Skłodowska-Curie Global Fellowship](http://ec.europa.eu/research/mariecurieactions/about-msca/actions/if/index_en.htm) based at the University of Otago’s [Centre for Sustainability](http://www.otago.ac.nz/centre-sustainability/staff/otago673896.html) (2017-2019) & the University of Southampton's Sustainable Energy Research Group (2019-2020).
 
 # Load data files
 

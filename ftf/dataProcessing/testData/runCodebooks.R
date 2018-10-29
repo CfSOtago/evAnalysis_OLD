@@ -22,13 +22,13 @@ evAnalysis::setup() # creates evParams list
 # Set local parameters ----
 
 dataLoc <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/flipTheFleet/")
-rmdFile <- paste0(evParams$repoLoc, "/ftf/dataProcessing/ftFBlackBoxTestDataCodebook.Rmd")
-outputLoc <- path.expand(paste0(evParams$repoLoc, "ftf/dataProcessing/"))
+rmdFile <- paste0(evParams$repoLoc, "/ftf/dataProcessing/testData/ftFBlackBoxTestDataCodebook.Rmd")
+outputLoc <- path.expand(paste0(evParams$repoLoc, "/ftf/dataProcessing/testData/"))
 
 # --- Code ---
 
 # --- Set files to run over ---
-path <- paste0(dataLoc, "raw/")
+path <- paste0(dataLoc, "raw/testData/")
 fileNames <- list.files(path = path , pattern = "EVBlackBox*")
 fListDT <- data.table::as.data.table(fileNames)
 fListDT <- fListDT[, fullPath := path.expand(paste0(path, fileNames))]
@@ -39,7 +39,7 @@ for(f in fListDT$fullPath){
   rmarkdown::render(input = rmdFile,
                     output_format = "html_document2",
                     params = list(dataLoc = dataLoc, iFile = f, fileName = fileName),
-                    output_file = paste0(outputLoc,"ftf/codebook_", fileName, ".html")
+                    output_file = paste0(outputLoc,"codebook_", fileName, ".html")
   )
 }
 

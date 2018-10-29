@@ -53,7 +53,7 @@ evAnalysis::setup() # sets a load of parameters which are then accessible via ev
 
 # Local paramaters ----
 evParams$dataLoc <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/flipTheFleet/")
-dFile <- paste0(evParams$dataLoc, "safe/ftfSafeLatestAll.csv.gz") # safe data file 
+dFile <- paste0(evParams$dataLoc, "safe/testData/ftfSafeLatestAll.csv.gz") # safe data file 
 ```
 
 \newpage
@@ -87,13 +87,13 @@ knitr::include_graphics("fig/bb.jpg")
 ## Requirements:
 
  * a safe version of the test FlipTheFleet black box dataset stored on `r evParams$otagoHCS` at: `r dFile`
- * original data made safe using [ftf/dataProcessing/makeSafe.R](https://github.com/CfSOtago/evAnalysis/blob/master/ftf/dataProcessing/makeSafe.R)
+ * original data made safe using [ftf/dataProcessing/makeSafe.R](https://github.com/CfSOtago/evAnalysis/blob/master/ftf/dataProcessing/testData/makeSafe.R)
 
 ## Code and report history
 
 See:
 
- * https://github.com/CfSOtago/evAnalysis/commits/master/ftf/analysis/ftFBlackBoxTestDataChargeTime.Rmd
+ * https://github.com/CfSOtago/evAnalysis/commits/master/ftf/analysis/testData/ftFBlackBoxTestDataChargeTime.Rmd
 
 ## Support
 

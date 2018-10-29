@@ -222,7 +222,7 @@ div.tocify {
 <h1 class="title toc-ignore">FlipTheFleet Black Box Data Tests</h1>
 <h3 class="subtitle"><em>Testing Time of Charging</em></h3>
 <h4 class="author"><em>Ben Anderson (<a href="mailto:b.anderson@soton.ac.uk">b.anderson@soton.ac.uk</a>, <code>@dataknut</code>)</em></h4>
-<h4 class="date"><em>Last run at: 2018-10-29 17:05:35</em></h4>
+<h4 class="date"><em>Last run at: 2018-10-29 17:28:11</em></h4>
 
 </div>
 
@@ -259,15 +259,15 @@ Figure 3.1: The Black Box (Source: FlipTheFleet)
 <div id="requirements" class="section level2">
 <h2><span class="header-section-number">3.2</span> Requirements:</h2>
 <ul>
-<li>a safe version of the test FlipTheFleet black box dataset stored on the University of Otago’s High-Capacity Central File Storage <a href="https://www.otago.ac.nz/its/services/hosting/otago068353.html">HCS</a> at: /Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/flipTheFleet/safe/ftfSafeLatestAll.csv.gz</li>
-<li>original data made safe using <a href="https://github.com/CfSOtago/evAnalysis/blob/master/ftf/dataProcessing/makeSafe.R">ftf/dataProcessing/makeSafe.R</a></li>
+<li>a safe version of the test FlipTheFleet black box dataset stored on the University of Otago’s High-Capacity Central File Storage <a href="https://www.otago.ac.nz/its/services/hosting/otago068353.html">HCS</a> at: /Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/flipTheFleet/safe/testData/ftfSafeLatestAll.csv.gz</li>
+<li>original data made safe using <a href="https://github.com/CfSOtago/evAnalysis/blob/master/ftf/dataProcessing/testData/makeSafe.R">ftf/dataProcessing/makeSafe.R</a></li>
 </ul>
 </div>
 <div id="code-and-report-history" class="section level2">
 <h2><span class="header-section-number">3.3</span> Code and report history</h2>
 <p>See:</p>
 <ul>
-<li><a href="https://github.com/CfSOtago/evAnalysis/commits/master/ftf/analysis/ftFBlackBoxTestDataChargeTime.Rmd" class="uri">https://github.com/CfSOtago/evAnalysis/commits/master/ftf/analysis/ftFBlackBoxTestDataChargeTime.Rmd</a></li>
+<li><a href="https://github.com/CfSOtago/evAnalysis/commits/master/ftf/analysis/testData/ftFBlackBoxTestDataChargeTime.Rmd" class="uri">https://github.com/CfSOtago/evAnalysis/commits/master/ftf/analysis/testData/ftFBlackBoxTestDataChargeTime.Rmd</a></li>
 </ul>
 </div>
 <div id="support" class="section level2">
@@ -287,7 +287,7 @@ Figure 3.1: The Black Box (Source: FlipTheFleet)
 <h1><span class="header-section-number">4</span> Load and check data</h1>
 <div id="load-data" class="section level2">
 <h2><span class="header-section-number">4.1</span> Load data</h2>
-<p>In this section we load and describe the pre-processed safe data from /Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/flipTheFleet/safe/ftfSafeLatestAll.csv.gz. Note that this data does <em>not</em> contain Latitude/Longitude or the vehicle registration number. This has been replaced by a unique hash code (per vehicle).</p>
+<p>In this section we load and describe the pre-processed safe data from /Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/flipTheFleet/safe/testData/ftfSafeLatestAll.csv.gz. Note that this data does <em>not</em> contain Latitude/Longitude or the vehicle registration number. This has been replaced by a unique hash code (per vehicle).</p>
 <pre class="r"><code>ftfSafeDT &lt;- data.table::as.data.table(readr::read_csv(dFile))</code></pre>
 <pre><code>## Parsed with column specification:
 ## cols(
@@ -782,7 +782,7 @@ Figure 7.3: Timing of charging from the grid
 </div>
 <div id="runtime" class="section level1">
 <h1><span class="header-section-number">9</span> Runtime</h1>
-<p>Analysis completed in 16.23 seconds ( 0.27 minutes) using <a href="https://cran.r-project.org/package=knitr">knitr</a> in <a href="http://www.rstudio.com">RStudio</a> with R version 3.5.1 (2018-07-02) running on x86_64-apple-darwin15.6.0.</p>
+<p>Analysis completed in 18.74 seconds ( 0.31 minutes) using <a href="https://cran.r-project.org/package=knitr">knitr</a> in <a href="http://www.rstudio.com">RStudio</a> with R version 3.5.1 (2018-07-02) running on x86_64-apple-darwin15.6.0.</p>
 </div>
 <div id="r-environment" class="section level1">
 <h1><span class="header-section-number">10</span> R environment</h1>
