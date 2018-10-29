@@ -8,15 +8,15 @@ author: 'Ben Anderson (b.anderson@soton.ac.uk, `@dataknut`)'
 date: 'Last run at: `r Sys.time()`'
 always_allow_html: yes
 output:
+  bookdown::word_document2:
+    toc: true
+    toc_depth: 2
+  bookdown::pdf_document2:
   bookdown::html_document2:
     toc: true
     toc_float: TRUE
     toc_depth: 2
     self_contained: no
-  bookdown::pdf_document2:
-  bookdown::word_document2:
-    toc: true
-    toc_depth: 2
 bibliography: '`r path.expand("~/bibliography.bib")`'
 ---
 
