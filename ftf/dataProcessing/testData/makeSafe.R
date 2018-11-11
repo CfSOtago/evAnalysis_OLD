@@ -31,7 +31,7 @@ ftfDT <- evAnalysis::ftfCreateDerived(ftfDT) # any parsing failures are NA dates
 ftfSafeDT <- evAnalysis::ftfCreateSafe(ftfDT)
 
 # save safe data out  ----
-of <- path.expand(paste0(dataLoc, "safe/ftfSafeLatestAll.csv"))
+of <- path.expand(paste0(oPath, "ftfSafeLatestAll.csv"))
 
 data.table::fwrite(ftfSafeDT, of)
 
