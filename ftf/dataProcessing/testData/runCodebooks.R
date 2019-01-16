@@ -23,23 +23,31 @@ evAnalysis::setup() # creates evParams list
 
 dataLoc <- path.expand("/Volumes/hum-csafe/Research Projects/GREEN Grid/externalData/flipTheFleet/")
 rmdFile <- paste0(evParams$repoLoc, "/ftf/dataProcessing/testData/ftFBlackBoxTestDataCodebook.Rmd")
-outputLoc <- path.expand(paste0(evParams$repoLoc, "/ftf/dataProcessing/testData/"))
+
 
 # --- Code ---
 
 # --- Set files to run over ---
-path <- paste0(dataLoc, "raw/testData/")
-fileNames <- list.files(path = path , pattern = "EVBlackBox*")
+dVersion <- "v0.1"
+idPath <- paste0(dataLoc, "raw/testData/", dVersion, "/") # input data location
+odPath <- paste0(paste0(dataLoc, "safe/testData/", dVersion, "/")) # where to put safe data
+
+fileNames <- list.files(path = idPath , pattern = ".csv.gz$") # assumes data has this ending
 fListDT <- data.table::as.data.table(fileNames)
-fListDT <- fListDT[, fullPath := path.expand(paste0(path, fileNames))]
+fListDT <- fListDT[, fullPath := path.expand(paste0(idPath, fileNames))]
 
 # --- Run codebook(s) ----
 for(f in fListDT$fullPath){
   fileName <-  fListDT[fullPath == f, fileNames ]
+  codebook <- paste0(idPath, "codebook_", fileName, ".html" ) # save codebooks to data folder
+  iFile = f
+  oFile = paste0(odPath, fileName, "_safe.csv")
   rmarkdown::render(input = rmdFile,
-                    output_format = "html_document2",
-                    params = list(dataLoc = dataLoc, iFile = f, fileName = fileName),
-                    output_file = paste0(outputLoc,"codebook_", fileName, ".html")
+                    output_format = "html_document2", # required for skim to work
+                    params = list(iFile = iFile,
+                                  fileName = fileName,
+                                  oFile = oFile),
+                    output_file = codebook # save codebooks to data location
   )
 }
 

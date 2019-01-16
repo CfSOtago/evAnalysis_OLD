@@ -1,8 +1,8 @@
 ---
 params:
- dataLoc: '' # passed in
  iFile: '' # passed in
  fileName: '' # passed in
+ oFile: '' # passed in
  title: "FlipTheFleet Test Black Box Data: Codebook"
 title: '`r params$title`'
 subtitle: '`r params$fileName`'
@@ -80,7 +80,8 @@ This report is intended to:
 
 ## Requirements
 
- * test dataset: `r params$fileName`
+ * test dataset: `r params$iFile`
+ * output (safe) data : `r params$oFile`
 
 ## History
 
@@ -256,8 +257,7 @@ skimCB <- skim(ftfSafeDT)
 Save the safe data for future use and gzip it.
 
 ```{r saveData}
-of <- path.expand(paste0(params$dataLoc, "safe/", params$fileName, "_safe.csv"))
-
+of <- params$oFile
 data.table::fwrite(ftfSafeDT, of)
 ofs <- file.size(of)
 dkUtils::gzipIt(of)
